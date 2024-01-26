@@ -67,11 +67,11 @@ export const Card = ({
       id={categoryId}
     >
       <Box
-        className={`bg-[white] h-fit w-full flex-col gap-[20px] p-[30px] text-primary ${showAll == false && "min-h-[310px]"}`}
+        className={`bg-[white] h-fit w-full flex-col gap-[20px] p-[30px] text-primary ${showAll == false && "min-h-[340px]"}`}
       >
         <Box className="gap-4 flex items-center">
           <Box className="w-[50px] h-[50px] flex items-center justify-center">
-            <Image alt="category" src={Icon.url} width={50} height={50} />
+            <Image alt="category" src={Icon?.url} width={50} height={50} />
           </Box>
           <Button onClick={() => router.push(`/category?id=${categoryId}`)}>
             <Text className="font-bold text-xl text-left">{category}</Text>
@@ -81,7 +81,7 @@ export const Card = ({
           {showAll
             ? ArrayData.map(({ type, value, id }) =>
                 type == "group" ? (
-                  <Text key={id} className="font-semibold">
+                  <Text key={id} className="font-bold text-lg">
                     {value}
                   </Text>
                 ) : (
@@ -91,7 +91,7 @@ export const Card = ({
                     onClick={() => router.push(`/doc?id=${id}`)}
                   >
                     <ArticleIcon />
-                    <Text className="text-lg break-words w-[272px] font-semibold text-primary">
+                    <Text className="text-base break-words w-[272px] font-semibold text-primary">
                       {value}
                     </Text>
                   </Box>
@@ -99,7 +99,7 @@ export const Card = ({
               )
             : ArrayData.slice(0, 4).map(({ type, value, id }) =>
                 type == "group" ? (
-                  <Text key={id} className="font-semibold">
+                  <Text key={id} className="font-bold text-lg">
                     {value}
                   </Text>
                 ) : (
@@ -109,7 +109,7 @@ export const Card = ({
                     onClick={() => router.push(`/doc?id=${id}`)}
                   >
                     <ArticleIcon />
-                    <Text className="text-lg break-words w-[272px] font-semibold text-primary">
+                    <Text className="text-base break-words w-[272px] font-semibold text-primary">
                       {value}
                     </Text>
                   </Box>

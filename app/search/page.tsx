@@ -1,11 +1,10 @@
 "use client";
-import ArticleIcon from "@/assets/icons/article";
-import SkeletonIcon from "@/assets/icons/skeletonIcon";
 import { Box, Text } from "@/components";
+import { Card } from "@/components/card";
+import { SkeletonLoading } from "@/components/skeletonloading";
 import { GET_CATEGORIES_QUERY } from "@/graphql";
 import { useQuery } from "@apollo/client";
-import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface ArticleType {
@@ -14,18 +13,20 @@ interface ArticleType {
   _id: string;
 }
 interface FilteredData {
+  categoryId: string;
   category: string;
   groupName: string;
   articles: ArticleType[];
-  icon?: {
+  icon: {
     url: string;
   };
 }
 
 const Page = () => {
-  const router = useRouter();
   const path = useSearchParams();
-  const [FilteredData, setFilteredData] = useState<FilteredData[]>([]);
+  const [FilteredData, setFilteredData] = useState<
+    [FilteredData[], FilteredData[], FilteredData[]] | []
+  >([]);
   const { data, loading } = useQuery(GET_CATEGORIES_QUERY);
   const SearchString = path.get("search") || "";
 
@@ -46,10 +47,26 @@ const Page = () => {
     return mergedArray;
   };
 
-  useEffect(() => {
-    const updatedFilteredData: FilteredData[] = [];
+  const calculateTotalArticles = async (
+    updatedFilteredData: FilteredData[],
+  ) => {
+    const originalArray: Array<FilteredData> =
+      mergeFilteredData(updatedFilteredData);
+    originalArray.sort((a, b) => b.articles.length - a.articles.length);
 
+    if (originalArray.length > 3) {
+      const firstArray = originalArray.filter((_, index) => index % 3 === 0);
+      const secondArray = originalArray.filter((_, index) => index % 3 === 1);
+      const thirdArray = originalArray.filter((_, index) => index % 3 === 2);
+      setFilteredData([firstArray, secondArray, thirdArray]);
+    } else {
+      setFilteredData([[...originalArray], [], []]);
+    }
+  };
+
+  useEffect(() => {
     const updateData = async () => {
+      const updatedFilteredData: FilteredData[] = [];
       for (const category of data?.getCategoryAndGroupsInfo || []) {
         for (const group of category.group) {
           const upperCaseGroupName = group.groupName?.toUpperCase();
@@ -59,6 +76,7 @@ const Page = () => {
               category: category.name,
               ...group,
               icon: category.icon,
+              categoryId: category._id,
             });
           } else {
             for (const article of group.articles) {
@@ -71,6 +89,7 @@ const Page = () => {
                   groupName: group.groupName,
                   articles: [article],
                   icon: category.icon,
+                  categoryId: category._id,
                 });
               } else {
                 if (
@@ -83,6 +102,7 @@ const Page = () => {
                     groupName: group.groupName,
                     articles: [article],
                     icon: category.icon,
+                    categoryId: category._id,
                   });
                 }
               }
@@ -90,63 +110,44 @@ const Page = () => {
           }
         }
       }
-      setFilteredData(mergeFilteredData(updatedFilteredData));
+      calculateTotalArticles(updatedFilteredData);
     };
 
     updateData();
-  }, [path, data, setFilteredData]);
-  console.log(FilteredData);
+  }, [path, data, setFilteredData, SearchString]);
+
   return (
     <Box className="w-full h-fit flex-col py-16 items-center">
-      {loading == true && (
-        <Box className="bg-[white] w-[360px] md:w-[1140px] h-fit p-[30px] flex-col gap-5">
-          <Box className="flex-col gap-5">
-            <Box className="gap-4 items-center">
-              <SkeletonIcon />
-              <Box className="animate-pulse bg-skeleton_gray skeleton w-[35%] xl:w-[25%] h-[22px] rounded-none" />
-            </Box>
-            <Box className="animate-pulse bg-skeleton_gray skeleton w-[85%] h-[22px] rounded-none" />
-            <Box className="animate-pulse bg-skeleton_gray skeleton w-[90%] h-[22px] rounded-none" />
-            <Box className="animate-pulse bg-skeleton_gray skeleton w-[85%] h-[22px] rounded-none" />
-            <Box className="animate-pulse bg-skeleton_gray skeleton w-[90%] h-[22px] rounded-none" />
-            <Box className="animate-pulse bg-skeleton_gray skeleton w-[80%] h-[22px] rounded-none" />
-          </Box>
-        </Box>
-      )}
-      {loading == false &&
-        FilteredData.length !== 0 &&
-        FilteredData.map((doc: FilteredData, indx) => (
-          <Box
-            className="bg-[white] w-[360px] md:w-[1140px] h-fit p-[30px] flex-col gap-5"
-            key={indx}
-          >
-            <Box className="gap-4 flex items-center">
-              <Box className="w-[50px] h-[50px]">
-                <Image
-                  className="min-w-[50px]"
-                  alt="category"
-                  src={doc?.icon?.url || ""}
-                  width={50}
-                  height={50}
-                />
+      <Box className="w-[360px] md:w-[1140px] h-fit  gap-5  grid xl:grid-cols-3">
+        {loading == false
+          ? data?.getCategoryAndGroupsInfo &&
+            FilteredData?.map((Lane, index) => (
+              <Box className="w-fit h-fit flex-col gap-[10px]" key={index}>
+                {Lane.length !== 0 &&
+                  Lane.map(
+                    ({
+                      groupName,
+                      category,
+                      categoryId,
+                      icon,
+                      articles,
+                    }: FilteredData) => (
+                      <Card
+                        key={categoryId}
+                        Icon={icon}
+                        category={category}
+                        groups={[{ groupName, articles }]}
+                        showAll={true}
+                        categoryId={categoryId}
+                      />
+                    ),
+                  )}
               </Box>
-              <Text className="font-bold text-xl">{doc?.category}</Text>
-            </Box>
-            <Text className="font-semibold">{doc?.groupName}</Text>
-            {doc?.articles.map(({ _id, title }: ArticleType) => (
-              <Box
-                key={_id}
-                className="flex items-center gap-4 h-fit "
-                onClick={() => router.push(`/doc?id=${_id}`)}
-              >
-                <ArticleIcon />
-                <Text className="text-base break-words w-[272px] font-semibold text-primary">
-                  {title}
-                </Text>
-              </Box>
-            ))}
-          </Box>
-        ))}
+            ))
+          : Array(6)
+              .fill("")
+              .map((val, index) => <SkeletonLoading key={index} />)}
+      </Box>
       {loading == false && FilteredData.length == 0 && (
         <Box className="md:w-[1140px] w-[290px] flex-col xl:flex-row">
           <Text className="font-semibold text-base md:text-xl text-primary">
