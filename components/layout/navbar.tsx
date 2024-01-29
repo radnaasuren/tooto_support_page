@@ -4,7 +4,7 @@ import TootoIcon from "@/assets/icons/tootoIcon";
 import NavbarIllustration from "@/assets/images/navbarImage.png";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Button, Input, Text } from "..";
 import MenuIcon from "@/assets/icons/menuIcon";
 import MobileSidebar from "../mobileSidebar";
@@ -21,7 +21,6 @@ const Navbar = () => {
   const Search = () => {
     if (value !== "") {
       router.push(`/search?search=${value}`);
-
       return;
     }
 
@@ -32,6 +31,9 @@ const Navbar = () => {
       Search();
     }
   };
+  useEffect(() => {
+    Search();
+  }, [value]);
   return (
     <Box>
       <Box

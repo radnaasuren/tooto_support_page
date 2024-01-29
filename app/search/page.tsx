@@ -148,7 +148,7 @@ const Page = () => {
               .fill("")
               .map((val, index) => <SkeletonLoading key={index} />)}
       </Box>
-      {loading == false && FilteredData.length == 0 && (
+      {loading == false && FilteredData[0]?.length == 0 && (
         <Box className="md:w-[1140px] w-[290px] flex-col xl:flex-row">
           <Text className="font-semibold text-base md:text-xl text-primary">
             Хайлтад тохирох илэрц олдсонгүй:

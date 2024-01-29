@@ -54,7 +54,7 @@ export default function Home() {
           className="bg-[white] rounded-xl py-2 px-14"
           onClick={() => router.push("/showAll")}
         >
-          <Text className="text-sec">Бүгдийг нь үзэх</Text>
+          <Text className="text-sec font-semibold">Бүгдийг нь үзэх</Text>
         </Button>
         <Box className="w-[calc(calc(100vw-235px)/2)] h-0.5 bg-gray" />
       </Box>
