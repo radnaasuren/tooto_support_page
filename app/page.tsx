@@ -51,10 +51,12 @@ export default function Home() {
       <Box className="w-full h-fit flex items-center">
         <Box className="w-[calc(calc(100vw-235px)/2)] h-0.5 bg-gray" />
         <Button
-          className="bg-[white] rounded-xl py-2 px-14"
+          className="bg-[white] rounded-xl py-2 px-14 w-fit"
           onClick={() => router.push("/showAll")}
         >
-          <Text className="text-sec font-semibold">Бүгдийг нь үзэх</Text>
+          <Text className="text-sec font-semibold w-[120px]">
+            Бүгдийг нь үзэх
+          </Text>
         </Button>
         <Box className="w-[calc(calc(100vw-235px)/2)] h-0.5 bg-gray" />
       </Box>

@@ -1,12 +1,12 @@
 "use client";
+import MenuIcon from "@/assets/icons/menuIcon";
 import SearchIcon from "@/assets/icons/searchIcon";
 import TootoIcon from "@/assets/icons/tootoIcon";
 import NavbarIllustration from "@/assets/images/navbarImage.png";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Box, Button, Input, Text } from "..";
-import MenuIcon from "@/assets/icons/menuIcon";
 import MobileSidebar from "../mobileSidebar";
 
 const Navbar = () => {
@@ -18,22 +18,21 @@ const Navbar = () => {
   const toggleSidebar = () => {
     setSidebarOpen((prev) => !prev);
   };
+
   const Search = () => {
     if (value !== "") {
-      router.push(`/search?search=${value}`);
+      window.location.href = `/search?search=${value}`;
       return;
     }
-
     router.push("/");
   };
+
   const handleKeyDown = (e: { key: string }) => {
     if (e.key === "Enter") {
       Search();
     }
   };
-  useEffect(() => {
-    Search();
-  }, [value]);
+
   return (
     <Box>
       <Box
@@ -48,7 +47,7 @@ const Navbar = () => {
               className="bg-[white] h-fit py-3.5 px-7 rounded-[100px] z-0 hidden xl:flex"
               onClick={() => router.push("/application")}
             >
-              <Text className="font-bold text-base text-primary">
+              <Text className="font-bold text-sm xl:text-base text-primary">
                 Хүсэлт/Өргөдөл гаргах
               </Text>
             </Button>
