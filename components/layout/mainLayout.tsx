@@ -10,7 +10,7 @@ import {
 } from "@apollo/client";
 
 const httpLink = createHttpLink({
-  uri: "https://tooto-support-backend.vercel.app/api/graphql",
+  uri: "https://tooto-support-backend-six.vercel.app/api/graphql",
   fetch,
 });
 
